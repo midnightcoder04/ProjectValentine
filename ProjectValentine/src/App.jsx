@@ -1,4 +1,12 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Quiz from "./pages/Quiz";
+import Card from "./pages/Card";
+import Compare from "./pages/Compare";
+import About from "./pages/About";
+import NavBar from "./components/NavBar";
+import Footer from "./components/Footer";
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -8,18 +16,21 @@ function App() {
 
   return (
     <>
-      <h1>Valentine...</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <Router>
+      <div className="flex flex-col min-h-screen">
+        <NavBar />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/card" element={<Card />} />
+            <Route path="/compare" element={<Compare />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </main>
+        <Footer />
       </div>
-      <p className="read-the-docs">
-        Add content
-      </p>
+    </Router>
     </>
   )
 }
