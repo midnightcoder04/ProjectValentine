@@ -506,6 +506,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (showTextArea) {
+            // Optional phone number input
+            var phoneGroup = document.createElement('div');
+            phoneGroup.style.marginBottom = '15px';
+            var phoneLabel = document.createElement('label');
+            phoneLabel.textContent = 'Contact Number (Optional)';
+            phoneLabel.style.display = 'block';
+            phoneLabel.style.marginBottom = '8px';
+            phoneLabel.style.fontFamily = "'Lato', sans-serif";
+            phoneLabel.style.fontWeight = '600';
+            phoneLabel.style.color = '#1a1a2e';
+            var adjournPhoneInput = document.createElement('input');
+            adjournPhoneInput.type = 'tel';
+            adjournPhoneInput.placeholder = 'Enter phone number to be reached back...';
+            adjournPhoneInput.style.width = '100%';
+            adjournPhoneInput.style.padding = '14px 16px';
+            adjournPhoneInput.style.fontFamily = "'Lato', sans-serif";
+            adjournPhoneInput.style.fontSize = '1rem';
+            adjournPhoneInput.style.border = '2px solid #000080';
+            adjournPhoneInput.style.background = '#faf9f6';
+            adjournPhoneInput.style.boxSizing = 'border-box';
+            phoneGroup.appendChild(phoneLabel);
+            phoneGroup.appendChild(adjournPhoneInput);
+            responseContainer.appendChild(phoneGroup);
+            
             var textArea = document.createElement('textarea');
             textArea.placeholder = 'Your questions or deliberations...';
             responseContainer.appendChild(textArea);
@@ -514,6 +538,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.textContent = 'SUBMIT DELIBERATION';
             submitButton.addEventListener('click', async function() {
                 var deliberation = textArea.value.trim();
+                var contactPhone = adjournPhoneInput.value.trim();
                 if (deliberation) {
                     var originalText = submitButton.textContent;
                     submitButton.textContent = 'SUBMITTING...';
@@ -526,6 +551,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         formData.append('subject', 'MOTION ADJOURNED - Questions/Considerations');
                         formData.append('form_type', 'Adjourned for Consideration');
                         formData.append('deliberation', deliberation);
+                        if (contactPhone) {
+                            formData.append('contact_number', contactPhone);
+                        }
                         
                         var response = await fetch('https://api.web3forms.com/submit', {
                             method: 'POST',
@@ -538,6 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             textArea.value = '';
                             textArea.placeholder = 'Deliberation noted. The Petitioner will respond in due course.';
                             textArea.disabled = true;
+                            adjournPhoneInput.disabled = true;
                             submitButton.textContent = 'DELIBERATION SUBMITTED';
                         } else {
                             submitButton.textContent = originalText;
