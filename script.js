@@ -184,6 +184,21 @@ document.addEventListener('DOMContentLoaded', function() {
         locationGroup.appendChild(locationInput);
         formContainer.appendChild(locationGroup);
         
+        // Phone number input
+        var phoneGroup = document.createElement('div');
+        phoneGroup.className = 'form-group';
+        var phoneLabel = document.createElement('label');
+        phoneLabel.textContent = 'Contact Number';
+        phoneLabel.setAttribute('for', 'phone-input');
+        var phoneInput = document.createElement('input');
+        phoneInput.type = 'tel';
+        phoneInput.id = 'phone-input';
+        phoneInput.className = 'form-input';
+        phoneInput.placeholder = 'Enter your phone number...';
+        phoneGroup.appendChild(phoneLabel);
+        phoneGroup.appendChild(phoneInput);
+        formContainer.appendChild(phoneGroup);
+        
         // Food choice section
         var foodGroup = document.createElement('div');
         foodGroup.className = 'form-group';
@@ -264,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var selectedDate = dateInput.value;
             var selectedTime = timeInput.value;
             var selectedLocation = locationInput.value.trim();
+            var selectedPhone = phoneInput.value.trim();
             var selectedFood = foodSelect.value === 'custom' ? customFoodInput.value.trim() : foodSelect.value;
             
             if (!selectedDate) {
@@ -277,6 +293,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!selectedLocation) {
                 locationInput.style.borderColor = '#8b0000';
                 locationInput.placeholder = 'Please enter a pickup location';
+                return;
+            }
+            if (!selectedPhone) {
+                phoneInput.style.borderColor = '#8b0000';
+                phoneInput.placeholder = 'Please enter your phone number';
                 return;
             }
             if (!selectedFood) {
@@ -302,6 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('date', formatDisplayDate(selectedDate));
                 formData.append('time', formatDisplayTime(selectedTime));
                 formData.append('pickup_location', selectedLocation);
+                formData.append('contact_number', selectedPhone);
                 formData.append('food_choice', selectedFood);
                 formData.append('special_instructions', notesInput.value.trim() || 'None');
                 
@@ -321,6 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         '<p><strong>Date:</strong> ' + formatDisplayDate(selectedDate) + '</p>' +
                         '<p><strong>Time:</strong> ' + formatDisplayTime(selectedTime) + '</p>' +
                         '<p><strong>Pickup:</strong> ' + selectedLocation + '</p>' +
+                        '<p><strong>Contact:</strong> ' + selectedPhone + '</p>' +
                         '<p><strong>Food Choice:</strong> ' + selectedFood + '</p>' +
                         (notesInput.value.trim() ? '<p><strong>Notes:</strong> ' + notesInput.value.trim() + '</p>' : '') +
                         '</div>';
