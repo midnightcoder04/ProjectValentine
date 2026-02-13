@@ -8,8 +8,8 @@
     --navy-blue: #000080;
     --navy-dark: #000060;
     --navy-light: #0000a0;
-    --parchment-white: #FBFBF8;
-    --parchment-dark: #f5f5f0;
+    --parchment-white: #FFF0F5;
+    --parchment-dark: #FFE4EC;
     --muted-gold: #C5B358;
     --gold-light: #D4C36A;
     --gold-dark: #A69540;
@@ -25,18 +25,11 @@ html {
 
 body {
     font-family: 'Lato', sans-serif;
-    background-color: var(--parchment-white);
+    background: linear-gradient(135deg, #FFF0F5 0%, #FFE4EC 50%, #FFF5F8 100%);
     color: var(--text-primary);
     line-height: 1.8;
     overflow-x: hidden;
-    background-image: 
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 28px,
-            rgba(0, 0, 128, 0.03) 28px,
-            rgba(0, 0, 128, 0.03) 29px
-        );
+    background-attachment: fixed;
 }
 
 /* Loading Screen */
