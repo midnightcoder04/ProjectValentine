@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var dateGroup = document.createElement('div');
         dateGroup.className = 'form-group';
         var dateLabel = document.createElement('label');
-        dateLabel.textContent = 'Preferred Date';
+        dateLabel.textContent = 'Preferred Date (Optional)';
         dateLabel.setAttribute('for', 'date-input');
         var dateInput = document.createElement('input');
         dateInput.type = 'date';
@@ -145,11 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set minimum date to today
         var today = new Date();
         dateInput.min = today.toISOString().split('T')[0];
-        // Default to next Saturday
-        var nextSat = new Date();
-        var daysUntilSat = (6 - nextSat.getDay() + 7) % 7 || 7;
-        nextSat.setDate(nextSat.getDate() + daysUntilSat);
-        dateInput.value = nextSat.toISOString().split('T')[0];
         dateGroup.appendChild(dateLabel);
         dateGroup.appendChild(dateInput);
         formContainer.appendChild(dateGroup);
@@ -158,13 +153,12 @@ document.addEventListener('DOMContentLoaded', function() {
         var timeGroup = document.createElement('div');
         timeGroup.className = 'form-group';
         var timeLabel = document.createElement('label');
-        timeLabel.textContent = 'Preferred Time';
+        timeLabel.textContent = 'Preferred Time (Optional)';
         timeLabel.setAttribute('for', 'time-input');
         var timeInput = document.createElement('input');
         timeInput.type = 'time';
         timeInput.id = 'time-input';
         timeInput.className = 'form-input';
-        timeInput.value = '19:00';
         timeGroup.appendChild(timeLabel);
         timeGroup.appendChild(timeInput);
         formContainer.appendChild(timeGroup);
@@ -173,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var locationGroup = document.createElement('div');
         locationGroup.className = 'form-group';
         var locationLabel = document.createElement('label');
-        locationLabel.textContent = 'Pickup Location';
+        locationLabel.textContent = 'Pickup Location (Optional)';
         locationLabel.setAttribute('for', 'location-input');
         var locationInput = document.createElement('input');
         locationInput.type = 'text';
@@ -188,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var phoneGroup = document.createElement('div');
         phoneGroup.className = 'form-group';
         var phoneLabel = document.createElement('label');
-        phoneLabel.textContent = 'Contact Number';
+        phoneLabel.textContent = 'Contact Number (Optional)';
         phoneLabel.setAttribute('for', 'phone-input');
         var phoneInput = document.createElement('input');
         phoneInput.type = 'tel';
@@ -203,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var foodGroup = document.createElement('div');
         foodGroup.className = 'form-group';
         var foodLabel = document.createElement('label');
-        foodLabel.textContent = 'Choice of Food';
+        foodLabel.textContent = 'Choice of Food (Optional)';
         foodLabel.setAttribute('for', 'food-choice');
         
         var foodOptions = [
@@ -282,33 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
             var selectedPhone = phoneInput.value.trim();
             var selectedFood = foodSelect.value === 'custom' ? customFoodInput.value.trim() : foodSelect.value;
             
-            if (!selectedDate) {
-                dateInput.style.borderColor = '#8b0000';
-                return;
-            }
-            if (!selectedTime) {
-                timeInput.style.borderColor = '#8b0000';
-                return;
-            }
-            if (!selectedLocation) {
-                locationInput.style.borderColor = '#8b0000';
-                locationInput.placeholder = 'Please enter a pickup location';
-                return;
-            }
-            if (!selectedPhone) {
-                phoneInput.style.borderColor = '#8b0000';
-                phoneInput.placeholder = 'Please enter your phone number';
-                return;
-            }
-            if (!selectedFood) {
-                foodSelect.style.borderColor = '#8b0000';
-                if (foodSelect.value === 'custom') {
-                    customFoodInput.style.borderColor = '#8b0000';
-                    customFoodInput.placeholder = 'Please enter your food preference';
-                }
-                return;
-            }
-            
             // Disable button while submitting
             var originalText = submitButton.textContent;
             submitButton.textContent = 'SUBMITTING...';
@@ -320,12 +287,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('access_key', '79002d36-34cf-4917-b026-b0ddf471e2ec');
                 formData.append('subject', 'MOTION GRANTED - Date Acceptance');
                 formData.append('form_type', 'Motion Granted');
-                formData.append('date', formatDisplayDate(selectedDate));
-                formData.append('time', formatDisplayTime(selectedTime));
-                formData.append('pickup_location', selectedLocation);
-                formData.append('contact_number', selectedPhone);
-                formData.append('food_choice', selectedFood);
-                formData.append('special_instructions', notesInput.value.trim() || 'None');
+                if (selectedDate) formData.append('date', formatDisplayDate(selectedDate));
+                if (selectedTime) formData.append('time', formatDisplayTime(selectedTime));
+                if (selectedLocation) formData.append('pickup_location', selectedLocation);
+                if (selectedPhone) formData.append('contact_number', selectedPhone);
+                if (selectedFood) formData.append('food_choice', selectedFood);
+                if (notesInput.value.trim()) formData.append('special_instructions', notesInput.value.trim());
                 
                 var response = await fetch('https://api.web3forms.com/submit', {
                     method: 'POST',
@@ -335,20 +302,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 var data = await response.json();
                 
                 if (response.ok) {
-                    // Generate calendar with custom details
-                    generateCustomCalendarInvite(selectedDate, selectedTime, selectedLocation, notesInput.value.trim(), selectedFood);
+                    // Generate calendar with custom details if date/time provided
+                    if (selectedDate && selectedTime) {
+                        generateCustomCalendarInvite(selectedDate, selectedTime, selectedLocation || 'TBD', notesInput.value.trim(), selectedFood);
+                    }
                     
-                    // Show confirmation
-                    formContainer.innerHTML = '<div class="confirmation-message">' +
-                        '<p><strong>Date:</strong> ' + formatDisplayDate(selectedDate) + '</p>' +
-                        '<p><strong>Time:</strong> ' + formatDisplayTime(selectedTime) + '</p>' +
-                        '<p><strong>Pickup:</strong> ' + selectedLocation + '</p>' +
-                        '<p><strong>Contact:</strong> ' + selectedPhone + '</p>' +
-                        '<p><strong>Food Choice:</strong> ' + selectedFood + '</p>' +
-                        (notesInput.value.trim() ? '<p><strong>Notes:</strong> ' + notesInput.value.trim() + '</p>' : '') +
-                        '</div>';
+                    // Show confirmation with only provided fields
+                    var confirmationHtml = '<div class="confirmation-message">';
+                    if (selectedDate) confirmationHtml += '<p><strong>Date:</strong> ' + formatDisplayDate(selectedDate) + '</p>';
+                    if (selectedTime) confirmationHtml += '<p><strong>Time:</strong> ' + formatDisplayTime(selectedTime) + '</p>';
+                    if (selectedLocation) confirmationHtml += '<p><strong>Pickup:</strong> ' + selectedLocation + '</p>';
+                    if (selectedPhone) confirmationHtml += '<p><strong>Contact:</strong> ' + selectedPhone + '</p>';
+                    if (selectedFood) confirmationHtml += '<p><strong>Food Choice:</strong> ' + selectedFood + '</p>';
+                    if (notesInput.value.trim()) confirmationHtml += '<p><strong>Notes:</strong> ' + notesInput.value.trim() + '</p>';
+                    if (confirmationHtml === '<div class="confirmation-message">') {
+                        confirmationHtml += '<p>Your acceptance has been recorded!</p>';
+                    }
+                    confirmationHtml += '</div>';
+                    formContainer.innerHTML = confirmationHtml;
                     
-                    submitButton.textContent = 'TERMS CONFIRMED - CALENDAR DOWNLOADED';
+                    submitButton.textContent = selectedDate && selectedTime ? 'TERMS CONFIRMED - CALENDAR DOWNLOADED' : 'ACCEPTANCE CONFIRMED';
                     submitButton.style.background = '#2d5a27';
                     submitButton.style.borderColor = '#2d5a27';
                 } else {
