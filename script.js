@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (flickCount >= 3) {
                     // Show verification message
-                    verificationStatus.textContent = 'VERIFICATION COMPLETE. AUTHORITY CONFIRMED.';
+                    verificationStatus.textContent = 'VERIFICATION COMPLETE. CONSENT COMMUNICATED.';
                     verificationStatus.classList.add('visible');
                     flickCounter.textContent = 'Mastery level: Expert';
                     
